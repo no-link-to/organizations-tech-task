@@ -1,0 +1,54 @@
+.form-field
+    display: flex
+    flex-direction: row
+    align-items: center
+    margin-top: 12px
+    position: relative
+    &__text
+        width: 150px
+        margin-right: 12px
+        color: #3B3B3B
+        font-size: 14px
+        line-height: 22px
+        font-family: "noto_sanslight", sans-serif
+        cursor: default!important
+    &__value
+        color: #3B3B3B
+        font-size: 14px
+        line-height: 22px
+        font-family: "noto_sansregular", sans-serif
+        background: none
+        border: none
+        width: 100%
+        transition: all .2s ease-in-out
+        cursor: default!important
+    &__input
+        padding: 10px 12px
+        width: 400px
+        border: 1px solid #CDCDCD
+        border-radius: 2px
+        transition: all .2s ease-in-out
+        &:hover
+            border: 1px solid #808080
+        &:focus
+            border: 1px solid #3B3B3B
+    &__label
+        font-size: 14px
+        line-height: 22px
+        color: #808080
+        font-family: "noto_sansregular", sans-serif
+        transition: all .2s ease-in-out
+        position: absolute
+        top: 50%
+        transform: translateY(-50%)
+        left: 12px
+        text-transform: uppercase
+        background: none
+        &.is_input_filled
+            padding: 0 4px
+            top: -6px
+            transform: unset
+            font-size: 10px
+            line-height: 14px
+            left: 8px
+            background: #FFFFFF
