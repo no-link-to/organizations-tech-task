@@ -25,7 +25,7 @@ const CompanySlice = createSlice({
   initialState,
   reducers: {
     getCompaniesListStart: startLoading,
-    getCompaniesListSuccess(state, action: PayloadAction<PaginationModel<CompanyModel[]> | null>) {
+    getCompaniesListSuccess(state, action: PayloadAction<PaginationModel<CompanyModel[]>>) {
       state.companyList = action.payload;
       state.status = requestStatuses.succeeded;
       state.error = null;
@@ -117,14 +117,17 @@ export const updateCompany = (companyId: number, params: Partial<CompanyModel>):
 
 
 export const deleteCompany = (companyId: number): AppThunk => async (
-  dispatch: AppDispatch
+  dispatch: AppDispatch, getState
 ) => {
   try {
       dispatch(getCompanyStart())
+      const { company } = getState();
       const item = await deleteCompanyReq(companyId);
-      if (item) {
+      if (item.status === 200 && company) {
+        if (company.companyList) {
+          dispatch(getCompaniesListSuccess({...company.companyList, results: company.companyList.results.filter(i => i.id !== companyId.toString())}));
+        }
         dispatch(getCompanySuccess(null));
-        dispatch(getCompaniesListSuccess(null));
       }
   } catch (error: any) {
       dispatch(getCompanyFailure(error.toString()));

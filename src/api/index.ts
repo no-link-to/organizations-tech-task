@@ -31,17 +31,20 @@ export const fetchCompanyReq = (companyId: number) =>
         .get()
         .json<CompanyModel>()
 
-export const updateCompanyReq = (companyId: number, params: Partial<CompanyModel>) => 
-    apiRequest()
+export const updateCompanyReq = (companyId: number, params: Partial<CompanyModel>) => {
+    console.log(params)
+    return apiRequest()
         .url(`/companies/${companyId}`)
-        .patch({...params})
-        .json<CompanyModel>();
+        .json(params)
+        .patch()
+        .json<CompanyModel>()
+}
 
 export const deleteCompanyReq = (companyId: number) => 
     apiRequest()
         .url(`/companies/${companyId}`)
         .delete()
-        .json();
+        .res();
 
 // Company Image
 export const uploadImageReq = (companyId: number, file: File) => {
@@ -72,5 +75,6 @@ export const fetchContactReq = (contactId: number) =>
 export const updateContactReq = (contactId: number, params: Partial<ContactModel>) => 
     apiRequest()
         .url(`/contacts/${contactId}/`)
-        .patch({...params})
+        .json(params)
+        .patch()
         .json<ContactModel>();

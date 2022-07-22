@@ -12,6 +12,7 @@ import { getCompany, getContact, resetToDefaults } from "slices/companySlice";
 import { RootState } from "slices/rootReducer";
 import { AppDispatch } from "store";
 import { routes } from "routes";
+import { CompanyNameForm } from "components/CompanyNameForm/CompanyNameForm";
 
 type Props = {
     companyId: string
@@ -69,7 +70,17 @@ const CompanyContainer = ({
             </CardHeader>
             <CardBody>
                 <>
-                    {company && <CompanyForm/> || null}
+                    {
+                        company
+                        &&
+                        <>
+                            <CompanyNameForm
+                                companyId={companyId}/>
+                            <CompanyForm/>
+                        </>
+                        ||
+                        null
+                    }
                     {contact && <ContactsForm/> || null}
                 </>
             </CardBody>

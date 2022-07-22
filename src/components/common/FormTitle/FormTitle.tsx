@@ -18,7 +18,7 @@ const FormTitle = ({
     <div className="form-header">
         <h1 className="form-header__text">{title}</h1>
         <button 
-            type="button"
+            type={value ? "submit" : "button"}
             onClick={() => fn(value)}
             className="form-header__btn">
                 <EditIcon/>

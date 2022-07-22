@@ -1,17 +1,21 @@
 import React, { useState } from "react";
 import { Formik, Field, Form } from 'formik';
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { FormTitle } from "components/common/FormTitle";
 import { CustomField } from "components/common/CustomField";
 import { CompanyModel } from "models";
 import { RootState } from "slices/rootReducer";
 import { formatDate } from "helpers";
+import { FormRecord } from "components/common/FormRecord";
+import { updateCompany } from "slices/companySlice";
+import { AppDispatch } from "store";
 
 import Schema from "./Schema";
-import { FormRecord } from "components/common/FormRecord";
 
 const CompanyForm = () => {
+
+    const dispatch: AppDispatch = useDispatch();
 
     const [isEdit, setIsEdit] = useState<boolean>(false);
 
@@ -26,7 +30,9 @@ const CompanyForm = () => {
     })
 
     const handleSubmit = (values: {fullName: string, contractNumber: string, contractDate: string, businessEntity: string, type: string}) => {
-        console.log(values)
+        if (company) {
+            dispatch(updateCompany(Number(company.id), {name: values.fullName, contract: {no: values.contractNumber, issue_date: values.contractDate}, businessEntity: values.businessEntity, type: values.type.split(", ")}))
+        }
     }
 
     const getChildren = () => {

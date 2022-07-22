@@ -1,18 +1,29 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Field, Form, Formik } from "formik";
 
 import { RootState } from "slices/rootReducer";
+import { CustomField } from "components/common/CustomField";
 import { CompanyModel } from "models";
 import { EditIcon } from "icons";
+import { AppDispatch } from "store";
+import { updateCompany } from "slices/companySlice";
 
 import Schema from "./Schema";
 import "./style.sass";
 
+type Props = {
+    companyId: string
+}
 
-const CompanyNameForm = () => {
+const CompanyNameForm = ({
+    companyId
+}: Props) => {
+
+    const dispatch: AppDispatch = useDispatch();
 
     const { company } = useSelector((state: RootState) => state.company);
+
     const [isEdit, setIsEdit] = useState<boolean>(false);
 
     const mapInitialValues = (values: CompanyModel | null) => ({
@@ -20,39 +31,10 @@ const CompanyNameForm = () => {
     });
 
     const handleSubmit = (values: {name: string}) => {
-        console.log("submit", values)
-    }
-
-    const getChildren = () => {
-        if (isEdit) {
-            return (
-                <>
-                    <Field
-                        type="text"
-                        name="name"
-                        className="company-name__input"/>
-                    <button
-                        type="submit"
-                        className="company-name__button">
-                            <EditIcon/>
-                    </button>
-                </>
-            )
+        if (companyId) {
+            dispatch(updateCompany(Number(companyId), {name: values.name}))
         }
-        return (
-            <>
-                <p className="company-name__text">{company?.name}</p>
-                <button
-                    type="button"
-                    className="company-name__button"
-                    onClick={() => setIsEdit(true)}>
-                        <EditIcon/>
-                </button>
-            </>
-        )
     }
-
-    const children = getChildren();
 
     return (
         <Formik
@@ -60,8 +42,26 @@ const CompanyNameForm = () => {
             initialValues={mapInitialValues(company)}
             onSubmit={handleSubmit}>
                 {() => (
-                    <Form className="company-name">
-                        {children}
+                    <Form className="single-field-form">
+                        {
+                            isEdit
+                            &&
+                            <Field
+                                type="text"
+                                name="name"
+                                label="Название компании"
+                                autoComplete="none"
+                                component={CustomField}/>
+                            ||
+                            <p className="single-field-form__text">{company?.name}</p>
+
+                        }
+                        <button
+                            type="submit"
+                            className="single-field-form__button"
+                            onClick={() => setIsEdit(true)}>
+                                <EditIcon/>
+                        </button>
                     </Form>
                 )}
         </Formik>
