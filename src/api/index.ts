@@ -63,14 +63,14 @@ export const deleteImageReq = (companyId: number, imageName: number) =>
         .json();
 
 // Company Contact
-export const fetchContact = (contactId: number) => 
+export const fetchContactReq = (contactId: number) => 
     apiRequest()
-        .url(`/contacts/${contactId}`)
+        .url(`/contacts/${contactId}/`)
         .get()
         .json<ContactModel>();
 
-export const updateContact = (contactId: number, params: Partial<ContactModel>) => 
+export const updateContactReq = (contactId: number, params: Partial<ContactModel>) => 
     apiRequest()
-        .url(`/contacts/${contactId}`)
+        .url(`/contacts/${contactId}/`)
         .patch({...params})
         .json<ContactModel>();

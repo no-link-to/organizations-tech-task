@@ -6,13 +6,13 @@ import { Field, FieldProps } from "formik";
 
 import "./style.sass";
 
-const FormField = ({
+const CustomField = ({
     field,
     form: {handleChange},
     ...props
 }: FieldProps & { label: string; disabled: boolean, type: string, mask?: string, autoComplete: string }) => {
 
-    const { label, disabled, type, mask, autoComplete } = props;
+    const { label, type, mask, autoComplete } = props;
 
     const element = field.name === "phone" ? (
         <InputMask
@@ -30,24 +30,13 @@ const FormField = ({
             className={clsx("form-field__input", field.value && "is_filled")}
             onChange={handleChange}/>
     );
-    
-    const children = disabled 
-        && 
-        <>
-            <p className="form-field__text">{label}:</p>
-            <p className="form-field__value">{field.value}</p>
-        </> 
-        || 
-        <>
-            {element}
-            <p className={clsx("form-field__label", field.value && "is_input_filled")}>{label}</p>
-        </>;
 
     return (
         <div className="form-field">
-            {children}
+            {element}
+            <p className={clsx("form-field__label", field.value && "is_input_filled")}>{label}</p>
         </div>
     )
 }
 
-export { FormField }
+export { CustomField }

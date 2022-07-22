@@ -15,12 +15,12 @@ const FormTitle = ({
     value,
     fn
 }: Props) => (
-    <div className="form-title">
-        <h1 className="form-title__text">{title}</h1>
+    <div className="form-header">
+        <h1 className="form-header__text">{title}</h1>
         <button 
             type="button"
             onClick={() => fn(value)}
-            className="form-title__btn">
+            className="form-header__btn">
                 <EditIcon/>
         </button>
     </div>

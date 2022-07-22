@@ -6,6 +6,9 @@ import { MainPage } from 'pages/MainPage';
 import { routes } from 'routes';
 import { authUser } from 'slices/authSlice';
 import { AppDispatch } from 'store';
+import { CompanyPage } from 'pages/CompanyPage';
+import { SideMenu } from "components/SideMenu";
+import { CardMenu } from "components/CardMenu";
 
 const App = () => {
 
@@ -18,14 +21,17 @@ const App = () => {
 
   return (
     <div className="app">
+      <SideMenu/>
+      <CardMenu/>
       <BrowserRouter>
-        <div className="app-left">
           <Routes>
             <Route 
               path={routes.home} 
               element={<MainPage/>}/>
+            <Route 
+              path={routes.company()} 
+              element={<CompanyPage/>}/>
           </Routes>
-        </div>
       </BrowserRouter>
     </div>
   );

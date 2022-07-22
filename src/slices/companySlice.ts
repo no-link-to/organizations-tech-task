@@ -1,12 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { deleteCompanyReq, fetchCompanyReq } from "api";
-import { CompanyModel, PaginationModel, RequestStatus, requestStatuses } from "models";
+import { deleteCompanyReq, fetchCompanyReq, fetchContactReq, updateCompanyReq, updateContactReq } from "api";
+import { CompanyModel, ContactModel, PaginationModel, RequestStatus, requestStatuses } from "models";
 import { AppDispatch, AppThunk } from "store";
 import { resetStateToInitial } from "./utils";
 
 interface CompanyState {
   companyList: PaginationModel<CompanyModel[]> | null;
   company: CompanyModel | null;
+  contact: ContactModel | null;
   status: RequestStatus;
   error: string | null;
 }
@@ -14,6 +15,7 @@ interface CompanyState {
 const initialState: CompanyState = {
   companyList: null,
   company: null,
+  contact: null,
   status: requestStatuses.idle,
   error: null,
 };
@@ -38,6 +40,14 @@ const CompanySlice = createSlice({
     },
     getCompanyFailure: loadingFailed,
 
+    getContactStart: startLoading,
+    getContactSuccess(state, action: PayloadAction<ContactModel>) {
+      state.contact = action.payload;
+      state.status = requestStatuses.succeeded;
+      state.error = null;
+    },
+    getContactFailure: loadingFailed,
+
     resetToDefaults(state) {
       resetStateToInitial(state, initialState);
     },
@@ -45,13 +55,35 @@ const CompanySlice = createSlice({
 });
 
 const {
+  getCompaniesListStart,
   getCompaniesListSuccess,
+  getCompaniesListFailure,
   getCompanyStart,
   getCompanySuccess,
-  getCompanyFailure
+  getCompanyFailure,
+  getContactStart,
+  getContactSuccess,
+  getContactFailure
 } = CompanySlice.actions;
 
 export const { resetToDefaults } = CompanySlice.actions;
+
+export const getCompanies = (companyId: number): AppThunk => async (
+  dispatch: AppDispatch
+) => {
+  try {
+      dispatch(getCompaniesListStart())
+      const item = await fetchCompanyReq(companyId);
+      dispatch(getCompaniesListSuccess({
+        count: 1,
+        next: null,
+        previous: null,
+        results: [item]
+      }))
+  } catch (error: any) {
+      dispatch(getCompaniesListFailure(error.toString()));
+  }
+}
 
 export const getCompany = (companyId: number): AppThunk => async (
     dispatch: AppDispatch
@@ -60,16 +92,29 @@ export const getCompany = (companyId: number): AppThunk => async (
         dispatch(getCompanyStart())
         const item = await fetchCompanyReq(companyId);
         dispatch(getCompanySuccess(item));
-        dispatch(getCompaniesListSuccess({
-          count: 1,
-          next: null,
-          previous: null,
-          results: [item]
-        }))
     } catch (error: any) {
         dispatch(getCompanyFailure(error.toString()));
     }
 }
+
+export const updateCompany = (companyId: number, params: Partial<CompanyModel>): AppThunk => async (
+  dispatch: AppDispatch
+) => {
+  try {
+      dispatch(getCompanyStart())
+      const item = await updateCompanyReq(companyId, params);
+      dispatch(getCompanySuccess(item));
+      dispatch(getCompaniesListSuccess({
+        count: 1,
+        next: null,
+        previous: null,
+        results: [item]
+      }))
+  } catch (error: any) {
+      dispatch(getCompanyFailure(error.toString()));
+  }
+}
+
 
 export const deleteCompany = (companyId: number): AppThunk => async (
   dispatch: AppDispatch
@@ -83,6 +128,30 @@ export const deleteCompany = (companyId: number): AppThunk => async (
       }
   } catch (error: any) {
       dispatch(getCompanyFailure(error.toString()));
+  }
+}
+
+export const getContact = (contactId: number): AppThunk => async (
+  dispatch: AppDispatch
+) => {
+  try {
+      dispatch(getContactStart())
+      const item = await fetchContactReq(contactId);
+      dispatch(getContactSuccess(item));
+  } catch (error: any) {
+      dispatch(getContactFailure(error.toString()));
+  }
+}
+
+export const updateContact = (contactId: number, params: Partial<ContactModel>): AppThunk => async (
+  dispatch: AppDispatch
+) => {
+  try {
+      dispatch(getContactStart())
+      const item = await updateContactReq(contactId, params);
+      dispatch(getContactSuccess(item));
+  } catch (error: any) {
+      dispatch(getContactFailure(error.toString()));
   }
 }
 

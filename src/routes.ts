@@ -1,3 +1,6 @@
+type RouteId = string | number;
+
 export const routes = {
-    "home": "/"
+    "home": "/",
+    company: (companyId: RouteId = ":companyId") => `/company/${companyId}`,
 }

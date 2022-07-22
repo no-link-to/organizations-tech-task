@@ -25,13 +25,13 @@ export interface ImageModel {
 }
 
 export interface CompanyModel {
-  id: number;
-  contactId: number;
+  id: string;
+  contactId: string;
   name: string;
   shortName: string;
   businessEntity: string;
   contract:  {
-    no: number;
+    no: string;
     issue_date: string;
   };
   type: string[];
@@ -42,7 +42,7 @@ export interface CompanyModel {
 }
 
 export interface ContactModel {
-  id: number,
+  id: string,
   lastname: string;
   firstname: string;
   patronymic: string;
