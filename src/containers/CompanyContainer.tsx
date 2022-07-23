@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import ClipboardJS from "clipboard";
 
 import { CardContent } from "components/common/CardContent";
 import { CardHeader } from "components/common/CardHeader";
@@ -14,6 +15,8 @@ import { AppDispatch } from "store";
 import { routes } from "routes";
 import { CompanyNameForm } from "components/CompanyNameForm/CompanyNameForm";
 import { CompanyImages } from "components/CompanyImages";
+import { ConfirmContext, OverlayContext } from "context";
+import { copyText } from "helpers";
 
 type Props = {
     companyId: string
@@ -23,24 +26,49 @@ const CompanyContainer = ({
     companyId
 }: Props) => {
 
+    const { pathname } = useLocation();
+
     const dispatch: AppDispatch = useDispatch();
+
+    const { setConfirmCompanyId } = useContext(ConfirmContext);
+    const { setIsOverlay } = useContext(OverlayContext);
 
     const { company, contact } = useSelector((state: RootState) => state.company);
 
     useEffect(() => {
-        if (companyId && (!company || company.id !== companyId)) {
-            dispatch(getCompany(Number(companyId)))
-        }
         if (company && (!contact || contact.id !== company.contactId)) {
             dispatch(getContact(Number(company.contactId)))
         }
     }, [dispatch, company, contact])
 
     useEffect(() => {
+        if (companyId && (!company || company.id !== companyId)) {
+            dispatch(getCompany(Number(companyId)))
+        }
+    }, [])
+
+    useEffect(() => {
         return () => {
             dispatch(resetToDefaults())
         }
-    }, [dispatch])
+    }, [dispatch]);
+
+    const handleDeleteCompany = () => {
+        if (companyId) {
+            setConfirmCompanyId(companyId);
+            setIsOverlay(true)
+        }
+    }
+
+    const handleRefreshData = () => {
+        if (companyId && (!company || company.id !== companyId)) {
+            dispatch(getCompany(Number(companyId)))
+        }
+    }
+
+    const handleCopyLink = () => {
+        copyText(pathname)
+    }
 
     return (
         <CardContent>
@@ -54,38 +82,47 @@ const CompanyContainer = ({
                 <div className="card-header-btns">
                     <button
                         className="card-header-btns__button"
-                        type="button">
+                        type="button"
+                        onClick={handleCopyLink}>
                             <LinkIcon/>
                     </button>
-                    <button
-                        className="card-header-btns__button"
-                        type="button">
-                            <RefreshIcon/>
-                    </button>
-                    <button
-                        className="card-header-btns__button"
-                        type="button">
-                            <DeleteIcon/>
-                    </button> 
-                </div>
-            </CardHeader>
-            <CardBody>
-                <>
                     {
                         company
                         &&
                         <>
-                            <CompanyNameForm
-                                companyId={companyId}/>
-                            <CompanyForm/>
+                            <button
+                                className="card-header-btns__button"
+                                type="button"
+                                onClick={handleRefreshData}>
+                                    <RefreshIcon/>
+                            </button>
+                            <button
+                                className="card-header-btns__button"
+                                type="button"
+                                onClick={handleDeleteCompany}>
+                                    <DeleteIcon/>
+                            </button> 
                         </>
                         ||
                         null
                     }
-                    {contact && <ContactsForm/> || null}
-                    <CompanyImages
-                        companyId={companyId}/>
-                </>
+                </div>
+            </CardHeader>
+            <CardBody>
+                {
+                    company
+                    &&
+                        <>
+                        <CompanyNameForm
+                            companyId={companyId}/>
+                        <CompanyForm/>
+                        {contact && <ContactsForm/> || null}
+                        <CompanyImages
+                            companyId={companyId}/>
+                    </>
+                    ||
+                    <h1 className="card-body__empty-title">Компания удалена или ее не существует</h1>
+                }
             </CardBody>
         </CardContent>
     )

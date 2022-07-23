@@ -1,18 +1,21 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { RootState } from "slices/rootReducer";
-import { deleteCompany, getCompanies } from "slices/companySlice";
+import { getCompanies } from "slices/companySlice";
 import { AppDispatch } from "store";
 import { COMPANY_ID } from "consts";
 import { CompanyList } from "components/CompanyList";
 import { CardContent } from "components/common/CardContent";
 import { CardHeader } from "components/common/CardHeader";
 import { CardBody } from "components/common/CardBody";
+import { ConfirmContext, OverlayContext } from "context";
 
 const MainContainer = () => {
 
     const dispatch: AppDispatch = useDispatch();
+    const {setConfirmCompanyId} = useContext(ConfirmContext);
+    const {setIsOverlay} = useContext(OverlayContext);
 
     const { companyList } = useSelector((state: RootState) => state.company);
 
@@ -22,8 +25,9 @@ const MainContainer = () => {
         }
     }, [dispatch, companyList])
 
-    const handleDeleteCompany = (value: number) => {
-        dispatch(deleteCompany(value));
+    const handleDeleteCompany = (value: string) => {
+        setConfirmCompanyId(value);
+        setIsOverlay(true)
     }
 
     return (

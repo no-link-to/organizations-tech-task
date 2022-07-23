@@ -33,7 +33,7 @@ const CompanySlice = createSlice({
     getCompaniesListFailure: loadingFailed,
 
     getCompanyStart: startLoading,
-    getCompanySuccess(state, action: PayloadAction<CompanyModel | null>) {
+    getCompanySuccess(state, action: PayloadAction<CompanyModel>) {
       state.company = action.payload;
       state.status = requestStatuses.succeeded;
       state.error = null;
@@ -47,6 +47,11 @@ const CompanySlice = createSlice({
       state.error = null;
     },
     getContactFailure: loadingFailed,
+
+    resetCompany(state) {
+      state.company = null;
+      state.contact = null;
+    },
 
     resetToDefaults(state) {
       resetStateToInitial(state, initialState);
@@ -66,7 +71,7 @@ const {
   getContactFailure
 } = CompanySlice.actions;
 
-export const { resetToDefaults } = CompanySlice.actions;
+export const { resetToDefaults, resetCompany } = CompanySlice.actions;
 
 export const getCompanies = (companyId: number): AppThunk => async (
   dispatch: AppDispatch
@@ -116,7 +121,7 @@ export const updateCompany = (companyId: number, params: Partial<CompanyModel>):
 }
 
 
-export const deleteCompany = (companyId: number): AppThunk => async (
+export const deleteCompany = (companyId: number, callback: () => void): AppThunk => async (
   dispatch: AppDispatch, getState
 ) => {
   try {
@@ -127,7 +132,8 @@ export const deleteCompany = (companyId: number): AppThunk => async (
       if (company.companyList) {
         dispatch(getCompaniesListSuccess({...company.companyList, results: company.companyList.results.filter(i => i.id !== companyId.toString())}));
       }
-      dispatch(getCompanySuccess(null));
+      dispatch(resetCompany());
+      callback()
     }
   } catch (error: any) {
     dispatch(getCompanyFailure(error.toString()));

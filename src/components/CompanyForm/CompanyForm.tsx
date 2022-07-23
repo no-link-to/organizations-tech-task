@@ -44,36 +44,31 @@ const CompanyForm = () => {
                         name="fullName"
                         label="Полное название"
                         autoComplete="none"
-                        component={CustomField}
-                        disabled={!isEdit}/>
+                        component={CustomField}/>
                     <Field
                         type="text"
                         name="contractNumber"
                         label="Номер договора"
                         autoComplete="none"
-                        component={CustomField}
-                        disabled={!isEdit}/>
+                        component={CustomField}/>
                     <Field
                         type="text"
                         name="contractDate"
                         label="Дата договора"
                         autoComplete="none"
-                        component={CustomField}
-                        disabled={!isEdit}/>
+                        component={CustomField}/>
                     <Field
                         type="text"
                         name="businessEntity"
                         label="Форма"
                         autoComplete="none"
-                        component={CustomField}
-                        disabled={!isEdit}/>
+                        component={CustomField}/>
                     <Field
                         type="text"
                         name="type"
                         label="Тип"
                         autoComplete="none"
-                        component={CustomField}
-                        disabled={!isEdit}/>
+                        component={CustomField}/>
                 </>
             )
         }

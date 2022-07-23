@@ -9,7 +9,7 @@ import { routes } from "routes";
 import "./style.sass";
 
 type Props = {
-    handleDeleteCompany: (value: number) => void;
+    handleDeleteCompany: (value: string) => void;
 }
 
 const CompanyList = ({
@@ -29,7 +29,7 @@ const CompanyList = ({
             <button
                 type="button"
                 className="company-item__delete"
-                onClick={() => handleDeleteCompany(Number(item.id))}>
+                onClick={() => handleDeleteCompany(item.id)}>
                     <DeleteIcon/>
             </button>
         </div>
