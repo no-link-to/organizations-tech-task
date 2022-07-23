@@ -13,6 +13,7 @@ import { RootState } from "slices/rootReducer";
 import { AppDispatch } from "store";
 import { routes } from "routes";
 import { CompanyNameForm } from "components/CompanyNameForm/CompanyNameForm";
+import { CompanyImages } from "components/CompanyImages";
 
 type Props = {
     companyId: string
@@ -82,6 +83,8 @@ const CompanyContainer = ({
                         null
                     }
                     {contact && <ContactsForm/> || null}
+                    <CompanyImages
+                        companyId={companyId}/>
                 </>
             </CardBody>
         </CardContent>

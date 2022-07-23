@@ -12,7 +12,7 @@ export const apiRequest = (isFile?: boolean): Wretcher =>
   wretch()
     .headers({
       Authorization: `Bearer ${getAuthToken()}`,
-      'Content-Type': isFile ? 'application/json' : 'multipart/form-data'
+    //   'Content-Type': !isFile ? 'application/json' : 'multipart/form-data'
     })
     .url(apiHost);
 
@@ -53,7 +53,7 @@ export const uploadImageReq = (companyId: number, file: File) => {
     return (
         apiRequest(true)
             .url(`/companies/${companyId}/image/`)
-            .formData(formData)
+            .formData({file})
             .post()
             .json<ImageModel>()
     )
