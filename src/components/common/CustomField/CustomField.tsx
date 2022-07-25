@@ -2,7 +2,7 @@ import React from "react";
 import InputMask from 'react-input-mask';
 import { clsx } from "clsx";
 
-import { Field, FieldProps, FormikErrors } from "formik";
+import { Field, FieldProps } from "formik";
 
 import "./style.sass";
 
@@ -10,11 +10,11 @@ const CustomField = ({
     field,
     form: {handleChange, errors, touched},
     ...props
-}: FieldProps & { label: string; disabled: boolean, type: string, mask?: string, autoComplete: string }) => {
+}: FieldProps & { label: string; disabled: boolean, type: string, mask?: string, autoComplete: string, className?: string }) => {
 
-    const { label, type, mask, autoComplete } = props;
+    const { label, type, mask, autoComplete, className } = props;
 
-    const element = field.name === "phone" ? (
+    const element = mask ? (
         <InputMask
             type={type}
             name={field.name}
@@ -32,11 +32,9 @@ const CustomField = ({
     );
 
     return (
-        <div className="form-field">
+        <div className={clsx("form-field", className && className)}>
             {element}
             <p className={clsx("form-field__label", field.value && "is_input_filled")}>{label}</p>
-            {/* @ts-ignore */}
-            {errors[field.name] && touched[field.name] && <div className="form-field__error">{errors[field.name]}</div>}
         </div>
     )
 }

@@ -20,8 +20,8 @@ export interface PaginationModel<T> {
 
 export interface ImageModel {
   name: string;
-  filePath: string;
-  thumbPath: string;
+  filepath: string;
+  thumbpath: string;
 }
 
 export interface CompanyModel {

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { FormTitle } from "components/common/FormTitle";
 import { CustomField } from "components/common/CustomField";
-import { CompanyModel } from "models";
+import { CompanyModel, requestStatuses } from "models";
 import { RootState } from "slices/rootReducer";
 import { formatDate } from "helpers";
 import { FormRecord } from "components/common/FormRecord";
@@ -12,6 +12,7 @@ import { updateCompany } from "slices/companySlice";
 import { AppDispatch } from "store";
 
 import Schema from "./Schema";
+import { formErrors } from "consts";
 
 const CompanyForm = () => {
 
@@ -19,10 +20,10 @@ const CompanyForm = () => {
 
     const [isEdit, setIsEdit] = useState<boolean>(false);
 
-    const { company } = useSelector((state: RootState) => state.company);
+    const { company, status, error } = useSelector((state: RootState) => state.company);
 
     const mapInitialValues = (values: CompanyModel | null) => ({
-        fullName: values?.shortName || "",
+        fullName: values?.name || "",
         contractNumber: values?.contract.no || "",
         contractDate: values ? formatDate(values.contract.issue_date) : "",
         businessEntity: values?.businessEntity || "",
@@ -31,7 +32,7 @@ const CompanyForm = () => {
 
     const handleSubmit = (values: {fullName: string, contractNumber: string, contractDate: string, businessEntity: string, type: string}) => {
         if (company) {
-            dispatch(updateCompany(Number(company.id), {name: values.fullName, contract: {no: values.contractNumber, issue_date: values.contractDate}, businessEntity: values.businessEntity, type: values.type.split(", ")}))
+            dispatch(updateCompany(Number(company.id), {name: values.fullName, contract: {no: values.contractNumber, issue_date: values.contractDate}, businessEntity: values.businessEntity, type: values.type.split(", ")}, () => setIsEdit(false)))
         }
     }
 
@@ -55,6 +56,7 @@ const CompanyForm = () => {
                         type="text"
                         name="contractDate"
                         label="Дата договора"
+                        mask="99.99.9999"
                         autoComplete="none"
                         component={CustomField}/>
                     <Field
@@ -76,15 +78,19 @@ const CompanyForm = () => {
             <>
                 <FormRecord
                     title="Полное название"
+                    name="fullName"
                     text={company?.name || ""}/>
                 <FormRecord
                     title="Договор"
+                    name="contract"
                     text={company ? `${company.contract.no} от ${formatDate(company.contract.issue_date)}` : ""}/>
                 <FormRecord
                     title="Форма"
+                    name="businessEntity"
                     text={company?.businessEntity || ""}/>
                 <FormRecord
                     title="Тип"
+                    name="type"
                     text={company ? company.type.join(", ") : ""}/>
             </>
         )
@@ -97,15 +103,23 @@ const CompanyForm = () => {
             validationSchema={Schema}
             initialValues={mapInitialValues(company)}
             onSubmit={handleSubmit}>
-                {() => (
-                    <Form className="form">
-                        <FormTitle
-                            title="общая информация"
-                            value={!isEdit}
-                            fn={setIsEdit}/>
-                        {children}
-                    </Form>
-                )}
+                {({ errors, setFieldError }) => {
+                    if (status === requestStatuses.failed && error) {
+                        if (error.toLowerCase().indexOf(formErrors.type.toLowerCase()) > -1 && !errors.type) {
+                            setFieldError("type", error)
+                        }
+                    }
+                    return (
+                        <Form className="form" id="company-form">
+                            <FormTitle
+                                title="общая информация"
+                                value={!isEdit}
+                                form="company-form"
+                                fn={() => setIsEdit(true)}/>
+                            {children}
+                        </Form>
+                    )
+                }}
         </Formik>
     )
 }

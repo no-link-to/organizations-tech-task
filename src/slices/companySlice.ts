@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { deleteCompanyReq, fetchCompanyReq, fetchContactReq, updateCompanyReq, updateContactReq, uploadImageReq } from "api";
+import { deleteCompanyReq, deleteImageReq, fetchCompanyReq, fetchContactReq, updateCompanyReq, updateContactReq, uploadImageReq } from "api";
+import { getErrorText } from "helpers";
 import { CompanyModel, ContactModel, PaginationModel, RequestStatus, requestStatuses } from "models";
 import { AppDispatch, AppThunk } from "store";
 import { resetStateToInitial } from "./utils";
@@ -86,23 +87,23 @@ export const getCompanies = (companyId: number): AppThunk => async (
       results: [item]
     }))
   } catch (error: any) {
-    dispatch(getCompaniesListFailure(error.toString()));
+    dispatch(getCompaniesListFailure(getErrorText(error)));
   }
 }
 
 export const getCompany = (companyId: number): AppThunk => async (
     dispatch: AppDispatch
 ) => {
-    try {
-      dispatch(getCompanyStart())
-      const item = await fetchCompanyReq(companyId);
-      dispatch(getCompanySuccess(item));
-    } catch (error: any) {
-      dispatch(getCompanyFailure(error.toString()));
-    }
+  try {
+    dispatch(getCompanyStart())
+    const item = await fetchCompanyReq(companyId);
+    dispatch(getCompanySuccess(item));
+  } catch (error: any) {
+    dispatch(getCompanyFailure(getErrorText(error)));
+  }
 }
 
-export const updateCompany = (companyId: number, params: Partial<CompanyModel>): AppThunk => async (
+export const updateCompany = (companyId: number, params: Partial<CompanyModel>, callback: () => void): AppThunk => async (
   dispatch: AppDispatch
 ) => {
   try {
@@ -114,9 +115,10 @@ export const updateCompany = (companyId: number, params: Partial<CompanyModel>):
       next: null,
       previous: null,
       results: [item]
-    }))
+    }));
+    callback()
   } catch (error: any) {
-      dispatch(getCompanyFailure(error.toString()));
+    dispatch(getCompanyFailure(getErrorText(error)));
   }
 }
 
@@ -136,7 +138,7 @@ export const deleteCompany = (companyId: number, callback: () => void): AppThunk
       callback()
     }
   } catch (error: any) {
-    dispatch(getCompanyFailure(error.toString()));
+    dispatch(getCompanyFailure(getErrorText(error)));
   }
 }
 
@@ -148,19 +150,20 @@ export const getContact = (contactId: number): AppThunk => async (
     const item = await fetchContactReq(contactId);
     dispatch(getContactSuccess(item));
   } catch (error: any) {
-    dispatch(getContactFailure(error.toString()));
+    dispatch(getContactFailure(getErrorText(error)));
   }
 }
 
-export const updateContact = (contactId: number, params: Partial<ContactModel>): AppThunk => async (
+export const updateContact = (contactId: number, params: Partial<ContactModel>, callback: () => void): AppThunk => async (
   dispatch: AppDispatch
 ) => {
   try {
     dispatch(getContactStart())
     const item = await updateContactReq(contactId, params);
     dispatch(getContactSuccess(item));
+    callback();
   } catch (error: any) {
-    dispatch(getContactFailure(error.toString()));
+    dispatch(getContactFailure(getErrorText(error)));
   }
 }
 
@@ -175,7 +178,22 @@ export const uploadImage = (companyId: number, file: File): AppThunk => async (
       dispatch(getCompanySuccess({...company.company, photos: [...company.company.photos, item]}));
     }
   } catch (error: any) {
-    dispatch(getCompanyFailure(error.toString()));
+    dispatch(getCompanyFailure(getErrorText(error)));
+  }
+}
+
+export const deleteImage = (companyId: number, imageName: string): AppThunk => async (
+  dispatch: AppDispatch, getState
+) => {
+  try {
+    const { company } = getState();
+    dispatch(getCompanyStart())
+    const item = await deleteImageReq(companyId, imageName);
+    if (item.status === 200 && company && company.company) {
+      dispatch(getCompanySuccess({...company.company, photos: [...company.company.photos.filter(i => i.name !== imageName)]}));
+    }
+  } catch (error: any) {
+    dispatch(getCompanyFailure(getErrorText(error)));
   }
 }
 

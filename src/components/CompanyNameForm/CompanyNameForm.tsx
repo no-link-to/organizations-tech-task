@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Field, Form, Formik } from "formik";
+import clsx from "clsx";
 
 import { RootState } from "slices/rootReducer";
 import { CustomField } from "components/common/CustomField";
@@ -27,12 +28,12 @@ const CompanyNameForm = ({
     const [isEdit, setIsEdit] = useState<boolean>(false);
 
     const mapInitialValues = (values: CompanyModel | null) => ({
-        name: values?.name || ""
+        name: values?.shortName || ""
     });
 
     const handleSubmit = (values: {name: string}) => {
         if (companyId) {
-            dispatch(updateCompany(Number(companyId), {name: values.name}))
+            dispatch(updateCompany(Number(companyId), {shortName: values.name}, () => setIsEdit(false)))
         }
     }
 
@@ -42,23 +43,24 @@ const CompanyNameForm = ({
             initialValues={mapInitialValues(company)}
             onSubmit={handleSubmit}>
                 {() => (
-                    <Form className="single-field-form">
-                        {
-                            isEdit
-                            &&
-                            <Field
-                                type="text"
-                                name="name"
-                                label="Название компании"
-                                autoComplete="none"
-                                component={CustomField}/>
-                            ||
-                            <p className="single-field-form__text">{company?.name}</p>
-
-                        }
+                    <Form className="single-field-form" id="company-name-form">
+                        <Field
+                            type="text"
+                            name="name"
+                            label="Название компании"
+                            autoComplete="none"
+                            component={CustomField}
+                            className={clsx(isEdit || "is_hidden")}/>
                         <button
                             type="submit"
-                            className="single-field-form__button"
+                            form="company-name-form"
+                            className={clsx("single-field-form__button", isEdit || "is_hidden")}>
+                                <EditIcon/>
+                        </button>
+                        <p className={clsx("single-field-form__text", isEdit && "is_hidden")}>{company?.shortName}</p>
+                        <button
+                            type="button"
+                            className={clsx("single-field-form__button", isEdit && "is_hidden")}
                             onClick={() => setIsEdit(true)}>
                                 <EditIcon/>
                         </button>

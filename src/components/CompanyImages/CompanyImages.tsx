@@ -4,7 +4,8 @@ import { AppDispatch } from "store";
 
 import { PlusIcon } from "icons";
 import { RootState } from "slices/rootReducer";
-import { uploadImage } from "slices/companySlice";
+import { deleteImage, uploadImage } from "slices/companySlice";
+import { ImageElement as Image} from "components/common/ImageElement";
 
 import "./style.sass";
 
@@ -35,6 +36,16 @@ const CompanyImages = ({
         }
     }
 
+    const handleDeleteImage = (value: string) => {
+        if (companyId) {
+            dispatch(deleteImage(Number(companyId), value))
+        }
+    }
+
+    const children = company && company.photos.length && company.photos.map(item => {
+        return <Image image={item} handleDeleteImage={() => handleDeleteImage(item.name)} key={item.name}/>
+    }) || null
+
     return (
         <div className="company-images">
             <h2 className="company-images__title">приложенные фото</h2>
@@ -43,9 +54,12 @@ const CompanyImages = ({
                 className="is_hidden" 
                 ref={ref}
                 onChange={handleChange}/>
+            <div className="company-images__list">
+                {children}
+            </div>
             <button 
                 type="button"
-                className="company-images__btn"
+                className="company-images__button"
                 onClick={handleUploadFile}>
                 <PlusIcon/>
                 добавить изобаржение

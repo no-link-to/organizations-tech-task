@@ -61,7 +61,7 @@ const CompanyContainer = ({
     }
 
     const handleRefreshData = () => {
-        if (companyId && (!company || company.id !== companyId)) {
+        if (companyId) {
             dispatch(getCompany(Number(companyId)))
         }
     }

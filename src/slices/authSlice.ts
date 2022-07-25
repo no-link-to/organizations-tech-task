@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { authReq } from "api";
 import { STORAGE_KEY } from "consts";
+import { getErrorText } from "helpers";
 import { RequestStatus, requestStatuses } from "models";
 import { AppDispatch, AppThunk } from "store";
 import { resetStateToInitial } from "./utils";
@@ -46,18 +47,18 @@ export const { resetToDefaults } = AuthSlice.actions;
 export const authUser = (username: string): AppThunk => async (
     dispatch: AppDispatch
 ) => {
-    try {
-        dispatch(authStart())
-        const item = await authReq(username);
-        const { headers } = item;
-        const token = headers.get("Authorization");
-        if (token) {
-          dispatch(authSuccess(username))
-          localStorage.setItem(STORAGE_KEY, token.replace("Bearer ", ""))
-        }
-    } catch (error: any) {
-        dispatch(authFailure(error.toString()));
+  try {
+    dispatch(authStart())
+    const item = await authReq(username);
+    const { headers } = item;
+    const token = headers.get("Authorization");
+    if (token) {
+      dispatch(authSuccess(username))
+      localStorage.setItem(STORAGE_KEY, token.replace("Bearer ", ""))
     }
+  } catch (error: any) {
+    dispatch(authFailure(getErrorText(error)));
+  }
 }
 
 export default AuthSlice.reducer;

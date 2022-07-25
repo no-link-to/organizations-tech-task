@@ -9,6 +9,7 @@ import { FormRecord } from "components/common/FormRecord";
 import { ContactModel } from "models";
 import { updateContact } from "slices/companySlice";
 import { AppDispatch } from "store";
+import { formatPhoneNumber } from "helpers";
 
 import Schema from "./Schema";
 
@@ -29,13 +30,12 @@ const ContactsForm = () => {
     })
 
     const handleSubmit = (values: {firstname: string, lastname: string, patronymic: string, phone: string, email: string}) => {
+        console.log("submit")
         if (contact) {
             const phone = values.phone ? values.phone.replace(/^(\+)|\D/g, "") : "";
-            dispatch(updateContact(Number(contact.id), {...values, phone}))
+            dispatch(updateContact(Number(contact.id), {...values, phone}, () => setIsEdit(false)))
         }
     }
-
-    const formatPhoneNumber = (value: string) => value.length === 11 ? `+7 (${value.slice(1, 4)}) ${value.slice(4, 7)}-${value.slice(7, 9)}-${value.slice(9)}` : value;
 
     const getChildren = () => {
         if (isEdit) {
@@ -79,12 +79,15 @@ const ContactsForm = () => {
             <>
                 <FormRecord
                     title="ФИО"
+                    name="fullName"
                     text={contact ? `${contact.firstname} ${contact.lastname} ${contact.patronymic}` : ""}/>
                 <FormRecord
                     title="Телефон"
+                    name="phone"
                     text={contact ? formatPhoneNumber(contact.phone) : ""}/>
                 <FormRecord
                     title="Эл. почта"
+                    name="email"
                     text={contact?.email || ""}/>
             </>
         )
@@ -98,12 +101,12 @@ const ContactsForm = () => {
             initialValues={mapInitialValues(contact)}
             onSubmit={handleSubmit}>
                 {() => (
-                    <Form className="form is_contacts">
+                    <Form className="form is_contacts" id="contact-form">
                         <FormTitle
                             title="контактные данные"
                             value={!isEdit}
-                            fn={setIsEdit}/>
-                        
+                            form="contact-form"
+                            fn={() => setIsEdit(true)}/>
                         {children}
                     </Form>
                 )}

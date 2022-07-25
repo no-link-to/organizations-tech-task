@@ -1,7 +1,6 @@
 import React, { useContext, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
-import { RootState } from "slices/rootReducer";
 import { getCompanies } from "slices/companySlice";
 import { AppDispatch } from "store";
 import { COMPANY_ID } from "consts";
@@ -17,13 +16,9 @@ const MainContainer = () => {
     const {setConfirmCompanyId} = useContext(ConfirmContext);
     const {setIsOverlay} = useContext(OverlayContext);
 
-    const { companyList } = useSelector((state: RootState) => state.company);
-
     useEffect(() => {
-        if (!companyList) {
-            dispatch(getCompanies(COMPANY_ID))
-        }
-    }, [dispatch, companyList])
+        dispatch(getCompanies(COMPANY_ID))
+    }, [])
 
     const handleDeleteCompany = (value: string) => {
         setConfirmCompanyId(value);
